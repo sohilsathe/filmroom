@@ -6,49 +6,44 @@
 //
 
 import SwiftUI
+import AVKit
+
 import SwiftData
+
+let TEST_VIDEO_FP = "/Users/sohil/Downloads/steph/cash.mp4"
+
+struct AVPlayerViewRepresentable: NSViewRepresentable {
+    let videoURL: URL
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        // Create the player view
+        let playerView = AVPlayerView()
+        let player = AVPlayer(url: videoURL)
+        playerView.player = player
+        
+        // start playback automatically
+        // player.play()
+        
+        return playerView
+    }
+
+    func updateNSView(_ nsView: AVPlayerView, context: Context) {
+        // Implement any updates if needed
+    }
+}
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+        VStack {
+            Text("Film Room")
+                .font(.largeTitle)
+                .padding()
+            
+            
+            AVPlayerViewRepresentable(videoURL: URL(fileURLWithPath: TEST_VIDEO_FP))
         }
     }
 }
