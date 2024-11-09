@@ -7,6 +7,8 @@
 
 import Foundation
 
+//TODO: Replace print with logging
+
 func getVideosDirectory() -> URL? {
     let fileManager = FileManager.default
     if let appSupportDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
