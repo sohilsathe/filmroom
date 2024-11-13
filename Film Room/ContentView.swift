@@ -224,7 +224,7 @@ struct ContentView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .green))
                                     .frame(width: 100, height: 100)
                             } else {
-                                Image(systemName: "play.square.fill")
+                                Image(systemName: "play.circle.fill")
                                     .resizable()
                                     .foregroundColor(.red)
                                     .frame(width: 100, height: 100)
