@@ -1,37 +1,165 @@
-//
-//  ContentView.swift
-//  Film Room
-//
-//  Created by Sohil Sathe on 11/8/24.
-//
-
 import SwiftUI
 import AVKit
-
 import SwiftData
 
-//TODO: Replace print with logging
-
+// config for yt-dlp
 let VIDEO_NAME = "content"
 let VIDEO_EXT = "mp4"
 
-struct AVPlayerViewRepresentable: NSViewRepresentable {
-    let videoURL: URL
+// [refresh (seek) rate in seconds, step size in seconds]
+let REWIND_FAST = [0.15, -0.50]
+let REWIND_NORMAL = [0.15, -0.1]
+let REWIND_SLOW = [0.15, -0.05]
+let FF_FAST = [0.2, 1.0]
+let FF_NORMAL = [0.2, 0.2]
+let FF_SLOW = [0.2, 0.1]
 
-    func makeNSView(context: Context) -> AVPlayerView {
-        // Create the player view
-        let playerView = AVPlayerView()
-        let player = AVPlayer(url: videoURL)
-        playerView.player = player
-        
-        // start playback automatically
-        // player.play()
-        
-        return playerView
+struct AVPlayerLayerRepresentable: NSViewRepresentable {
+    let videoURL: URL
+    private let player = AVPlayer()
+    
+    @Binding var isRewinding: Bool
+    @Binding var isPaused: Bool
+    
+    // rewind / fast forward related
+    @Binding var refreshRate: Double
+    @Binding var stepSize: Double
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 
-    func updateNSView(_ nsView: AVPlayerView, context: Context) {
-        // Implement any updates if needed
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        let playerLayer = AVPlayerLayer(player: player)
+        playerLayer.videoGravity = .resizeAspect
+        player.replaceCurrentItem(with: AVPlayerItem(url: videoURL))
+        
+        view.layer = CALayer()
+        view.layer?.addSublayer(playerLayer)
+        
+        playerLayer.frame = view.bounds
+        playerLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+        
+        // Register key event handlers
+        NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { event in
+            return context.coordinator.handleKeyEvent(event)
+        }
+        
+        context.coordinator.setupPlayerObservers()
+        player.play()
+        
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        if let playerLayer = nsView.layer?.sublayers?.first as? AVPlayerLayer {
+            playerLayer.frame = nsView.bounds
+        }
+        
+        if isPaused {
+            player.pause()
+        } else if !isRewinding {
+            player.play()
+        }
+        
+        if isRewinding {
+            context.coordinator.startRewind(refreshRate: refreshRate, stepSize: stepSize)
+        } else {
+            context.coordinator.stopRewind()
+        }
+    }
+
+    class Coordinator: NSObject {
+        let parent: AVPlayerLayerRepresentable
+        private var rewindTimer: Timer?
+        
+        init(_ parent: AVPlayerLayerRepresentable) {
+            self.parent = parent
+        }
+        
+        func setupPlayerObservers() {
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+                                                   object: nil,
+                                                   queue: .main) { _ in
+                self.parent.player.seek(to: .zero)
+            }
+        }
+
+        func startRewind(refreshRate: Double, stepSize: Double) {
+            guard rewindTimer == nil else { return }
+            rewindTimer = Timer.scheduledTimer(withTimeInterval: refreshRate, repeats: true) { _ in
+                let currentTime = self.parent.player.currentTime()
+                let rewindTime = CMTime(seconds: max(currentTime.seconds + stepSize, 0), preferredTimescale: currentTime.timescale)
+                print("Requesting seek with step size \(self.parent.stepSize)")
+                self.parent.player.seek(to: rewindTime, toleranceBefore: .zero, toleranceAfter: .zero)
+            }
+        }
+
+        func stopRewind() {
+            rewindTimer?.invalidate()
+            rewindTimer = nil
+        }
+
+        func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
+            switch event.keyCode {
+            case 32: // u
+                handleKeyEventHelper(event, refreshRate: REWIND_FAST[0], stepSize: REWIND_FAST[1])
+                return nil
+            case 34: // i
+                handleKeyEventHelper(event, refreshRate: FF_FAST[0], stepSize: FF_FAST[1])
+                return nil
+            case 38: // j
+                handleKeyEventHelper(event, refreshRate: REWIND_NORMAL[0], stepSize: REWIND_NORMAL[1])
+                return nil
+            case 40: // k
+                handleKeyEventHelper(event, refreshRate: FF_NORMAL[0], stepSize: FF_NORMAL[1])
+                return nil
+            case 45: // n
+                handleKeyEventHelper(event, refreshRate: REWIND_SLOW[0], stepSize: REWIND_SLOW[1])
+                return nil
+            case 46: // m
+                handleKeyEventHelper(event, refreshRate: FF_SLOW[0], stepSize: FF_SLOW[1])
+                return nil
+            case 49: // Space Bar
+                if event.type == .keyDown {
+                    parent.isPaused.toggle()
+                }
+                return nil
+            default:
+                return event
+            }
+        }
+        
+        func handleKeyEventHelper(_ event: NSEvent, refreshRate: Double, stepSize: Double) {
+            if event.type == .keyDown {
+                parent.isPaused = true
+                parent.refreshRate = refreshRate
+                parent.stepSize = stepSize
+                parent.isRewinding = true
+            } else if event.type == .keyUp {
+                parent.isRewinding = false
+                parent.refreshRate = 0.0
+                parent.stepSize = 0.0
+                parent.isPaused = false
+            }
+        }
+    }
+}
+
+struct PlayerView: View {
+    let videoURL: URL
+    @State private var isRewinding = false
+    @State private var isPaused = false
+    @State private var refreshRate = 0.0
+    @State private var stepSize = 0.0
+    
+    var body: some View {
+        VStack {
+            AVPlayerLayerRepresentable(videoURL: videoURL, isRewinding: $isRewinding, isPaused: $isPaused, refreshRate: $refreshRate, stepSize: $stepSize)
+                .background(Color.black)
+                .edgesIgnoringSafeArea(.all)
+        }
     }
 }
 
@@ -72,7 +200,6 @@ struct ContentView: View {
                             .padding(.horizontal, 20)
                         
                         Button(action: {
-                            //TODO: refactor out
                             downloadInProgress = true
                             DispatchQueue.global().async {
                                 downloadYoutubeVideo(url: youtubeLink, destinationPath: destinationPath, videoName: VIDEO_NAME) { success, msg in
@@ -81,11 +208,9 @@ struct ContentView: View {
                                             videoURL = URL(fileURLWithPath: destinationPath).appendingPathComponent("\(VIDEO_NAME).\(VIDEO_EXT)")
                                             downloadInProgress = false
                                             downloadComplete = true
-                                            print ("download successful to \(destinationPath) with message \(msg ?? "no msg")")
                                         }
                                     } else {
                                         DispatchQueue.main.async {
-                                            print("download unsuccessful with msg \(msg ?? "no msg")")
                                             downloadInProgress = false
                                         }
                                     }
@@ -116,14 +241,6 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.all)
             }
         }
-    }
-}
-
-struct PlayerView: View {
-    let videoURL: URL
-
-    var body: some View {
-        AVPlayerViewRepresentable(videoURL: videoURL)
     }
 }
 
