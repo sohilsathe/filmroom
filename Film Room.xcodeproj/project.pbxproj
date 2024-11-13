@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7BC516D22CE56B8100CACA20 /* yt-dlpX in Embed Helper Tools */ = {isa = PBXBuildFile; fileRef = 7BE038FA2CE55E3600CD7DB4 /* yt-dlpX */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7B4961292CDEBAEC0026AB0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,12 +25,43 @@
 			remoteGlobalIDString = 7B4961142CDEBAE90026AB0E;
 			remoteInfo = "Film Room";
 		};
+		7BC516CF2CE56B2C00CACA20 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B49610D2CDEBAE90026AB0E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7BE038F92CE55E3600CD7DB4;
+			remoteInfo = "yt-dlpX";
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7BC516D12CE56B4100CACA20 /* Embed Helper Tools */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				7BC516D22CE56B8100CACA20 /* yt-dlpX in Embed Helper Tools */,
+			);
+			name = "Embed Helper Tools";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BE038F82CE55E3600CD7DB4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7B4961152CDEBAE90026AB0E /* Film Room.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Film Room.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B4961282CDEBAEC0026AB0E /* Film RoomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Film RoomTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B4961322CDEBAEC0026AB0E /* Film RoomUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Film RoomUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BE038FA2CE55E3600CD7DB4 /* yt-dlpX */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "yt-dlpX"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,6 +78,11 @@
 		7B4961352CDEBAEC0026AB0E /* Film RoomUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Film RoomUITests";
+			sourceTree = "<group>";
+		};
+		7BE038FB2CE55E3600CD7DB4 /* yt-dlpX */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "yt-dlpX";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +109,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7BE038F72CE55E3600CD7DB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +125,7 @@
 				7B4961172CDEBAE90026AB0E /* Film Room */,
 				7B49612B2CDEBAEC0026AB0E /* Film RoomTests */,
 				7B4961352CDEBAEC0026AB0E /* Film RoomUITests */,
+				7BE038FB2CE55E3600CD7DB4 /* yt-dlpX */,
 				7B4961162CDEBAE90026AB0E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +136,7 @@
 				7B4961152CDEBAE90026AB0E /* Film Room.app */,
 				7B4961282CDEBAEC0026AB0E /* Film RoomTests.xctest */,
 				7B4961322CDEBAEC0026AB0E /* Film RoomUITests.xctest */,
+				7BE038FA2CE55E3600CD7DB4 /* yt-dlpX */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,10 +151,12 @@
 				7B4961112CDEBAE90026AB0E /* Sources */,
 				7B4961122CDEBAE90026AB0E /* Frameworks */,
 				7B4961132CDEBAE90026AB0E /* Resources */,
+				7BC516D12CE56B4100CACA20 /* Embed Helper Tools */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				7BC516D02CE56B2C00CACA20 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				7B4961172CDEBAE90026AB0E /* Film Room */,
@@ -163,6 +214,28 @@
 			productReference = 7B4961322CDEBAEC0026AB0E /* Film RoomUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		7BE038F92CE55E3600CD7DB4 /* yt-dlpX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BE039002CE55E3600CD7DB4 /* Build configuration list for PBXNativeTarget "yt-dlpX" */;
+			buildPhases = (
+				7BE038F62CE55E3600CD7DB4 /* Sources */,
+				7BE038F72CE55E3600CD7DB4 /* Frameworks */,
+				7BE038F82CE55E3600CD7DB4 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7BE038FB2CE55E3600CD7DB4 /* yt-dlpX */,
+			);
+			name = "yt-dlpX";
+			packageProductDependencies = (
+			);
+			productName = "yt-dlpX";
+			productReference = 7BE038FA2CE55E3600CD7DB4 /* yt-dlpX */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +257,9 @@
 						CreatedOnToolsVersion = 16.1;
 						TestTargetID = 7B4961142CDEBAE90026AB0E;
 					};
+					7BE038F92CE55E3600CD7DB4 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 				};
 			};
 			buildConfigurationList = 7B4961102CDEBAE90026AB0E /* Build configuration list for PBXProject "Film Room" */;
@@ -203,6 +279,7 @@
 				7B4961142CDEBAE90026AB0E /* Film Room */,
 				7B4961272CDEBAEC0026AB0E /* Film RoomTests */,
 				7B4961312CDEBAEC0026AB0E /* Film RoomUITests */,
+				7BE038F92CE55E3600CD7DB4 /* yt-dlpX */,
 			);
 		};
 /* End PBXProject section */
@@ -253,6 +330,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7BE038F62CE55E3600CD7DB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +349,11 @@
 			isa = PBXTargetDependency;
 			target = 7B4961142CDEBAE90026AB0E /* Film Room */;
 			targetProxy = 7B4961332CDEBAEC0026AB0E /* PBXContainerItemProxy */;
+		};
+		7BC516D02CE56B2C00CACA20 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7BE038F92CE55E3600CD7DB4 /* yt-dlpX */;
+			targetProxy = 7BC516CF2CE56B2C00CACA20 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -393,6 +482,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Film Room/Film_Room.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -422,6 +512,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Film Room/Film_Room.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -513,6 +604,42 @@
 			};
 			name = Release;
 		};
+		7BE038FE2CE55E3600CD7DB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "yt-dlpX/yt-dlpX.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AT43NWHS2G;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CODE_SIGN_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "ssathe.Film-Room.yt-dlpX";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7BE038FF2CE55E3600CD7DB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "yt-dlpX/yt-dlpX.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = AT43NWHS2G;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CODE_SIGN_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "ssathe.Film-Room.yt-dlpX";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -548,6 +675,15 @@
 			buildConfigurations = (
 				7B4961432CDEBAEC0026AB0E /* Debug */,
 				7B4961442CDEBAEC0026AB0E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7BE039002CE55E3600CD7DB4 /* Build configuration list for PBXNativeTarget "yt-dlpX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BE038FE2CE55E3600CD7DB4 /* Debug */,
+				7BE038FF2CE55E3600CD7DB4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
