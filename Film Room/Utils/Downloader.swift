@@ -19,7 +19,8 @@ func downloadYoutubeVideo(url: String, destinationPath: String, videoName: Strin
     process.arguments = [
         url,
         "-f", "bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/mp4",
-        "-o", "\(destinationPath)/\(videoName)"
+        "-o", "\(destinationPath)/\(videoName)",
+        "--force-overwrites"
     ]
     
     let pipe = Pipe()
