@@ -15,8 +15,8 @@ let FF_NORMAL = [0.2, 0.2]
 let FF_SLOW = [0.2, 0.1]
 
 struct AVPlayerLayerRepresentable: NSViewRepresentable {
+    let player: AVPlayer
     let videoURL: URL
-    private let player = AVPlayer()
     
     @Binding var isRewinding: Bool
     @Binding var isPaused: Bool
@@ -33,7 +33,6 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
         let view = NSView()
         let playerLayer = AVPlayerLayer(player: player)
         playerLayer.videoGravity = .resizeAspect
-        player.replaceCurrentItem(with: AVPlayerItem(url: videoURL))
         
         view.layer = CALayer()
         view.layer?.addSublayer(playerLayer)
@@ -47,7 +46,6 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
         }
         
         context.coordinator.setupPlayerObservers()
-        player.play()
         
         return view
     }
@@ -147,18 +145,22 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
 }
 
 struct PlayerView: View {
+    let player: AVPlayer
     let videoURL: URL
     @State private var isRewinding = false
-    @State private var isPaused = false
+    @State private var isPaused = true
     @State private var refreshRate = 0.0
     @State private var stepSize = 0.0
     
+    @Binding var downloadComplete: Bool // pass through to bottom bar
+    
     var body: some View {
         VStack {
-            AVPlayerLayerRepresentable(videoURL: videoURL, isRewinding: $isRewinding, isPaused: $isPaused, refreshRate: $refreshRate, stepSize: $stepSize)
+            AVPlayerLayerRepresentable(player: player, videoURL: videoURL, isRewinding: $isRewinding, isPaused: $isPaused, refreshRate: $refreshRate, stepSize: $stepSize)
                 .background(Color.black)
                 .edgesIgnoringSafeArea(.all)
-        }
+            BottomBarView(downloadComplete: $downloadComplete, isPaused: $isPaused).padding(.bottom, 20)
+        }.background(Color.black)
     }
 }
 
@@ -171,17 +173,14 @@ struct ContentView: View {
     @State private var downloadComplete: Bool = false
     @State private var videoURL: URL? = nil
 
-    let destinationPath = getVideosDirectory()?.path() ?? "~/Downloads/"
+    private let player = AVPlayer()
+    private let destinationPath = getVideosDirectory()?.path() ?? "~/Downloads/"
 
     var body: some View {
         VStack {
             if downloadComplete, let videoURL = videoURL {
                 // video player view
-                VStack {
-                    PlayerView(videoURL: videoURL).edgesIgnoringSafeArea(.all)
-                    BottomBarView().padding(.bottom, 20)
-                }
-                .background(Color.black)
+                PlayerView(player: player, videoURL: videoURL, downloadComplete: $downloadComplete).edgesIgnoringSafeArea(.all)
             } else {
                 // home view
                 VStack {
@@ -208,6 +207,7 @@ struct ContentView: View {
                                     if success {
                                         DispatchQueue.main.async {
                                             videoURL = URL(fileURLWithPath: destinationPath).appendingPathComponent("\(VIDEO_NAME).\(VIDEO_EXT)")
+                                            player.replaceCurrentItem(with: AVPlayerItem(url: videoURL!))
                                             downloadInProgress = false
                                             downloadComplete = true
                                         }
@@ -246,8 +246,24 @@ struct ContentView: View {
 
 
 struct BottomBarView: View {
+    @Binding var downloadComplete: Bool
+    @Binding var isPaused: Bool
+
     var body: some View {
         HStack(spacing: 50) {
+            Button(action: {
+                isPaused = true
+                downloadComplete = false
+            }) {
+                Image(systemName: "chevron.left.circle.fill")
+                    .font(.system(size: 32))
+                    .foregroundColor(.white)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .padding(.leading, 20)
+        
+            Spacer()
+            
             VStack(spacing: 10) {
                 Label("Fast Rewind", systemImage: "u.square")
                 Label("Normal Rewind", systemImage: "j.square")
@@ -269,6 +285,8 @@ struct BottomBarView: View {
                     .foregroundColor(.gray)
             }
             .foregroundColor(.white)
+            
+            Spacer()
         }
         .padding()
     }
