@@ -91,7 +91,6 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
             rewindTimer = Timer.scheduledTimer(withTimeInterval: refreshRate, repeats: true) { _ in
                 let currentTime = self.parent.player.currentTime()
                 let rewindTime = CMTime(seconds: max(currentTime.seconds + stepSize, 0), preferredTimescale: currentTime.timescale)
-                print("Requesting seek with step size \(self.parent.stepSize)")
                 self.parent.player.seek(to: rewindTime, toleranceBefore: .zero, toleranceAfter: .zero)
             }
         }
