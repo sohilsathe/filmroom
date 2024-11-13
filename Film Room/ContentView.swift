@@ -177,10 +177,10 @@ struct ContentView: View {
         VStack {
             if downloadComplete, let videoURL = videoURL {
                 // Show video player if the video is downloaded
-                PlayerView(videoURL: videoURL)
-                    .background(Color.black)
-                    .edgesIgnoringSafeArea(.all)
-                
+                VStack {
+                    PlayerView(videoURL: videoURL).edgesIgnoringSafeArea(.all)
+                    BottomBarView().padding(.bottom, 20)
+                }.background(Color.black)
             } else {
                 // Default view with title, text field, and button
                 VStack {
@@ -240,6 +240,35 @@ struct ContentView: View {
                 .edgesIgnoringSafeArea(.all)
             }
         }
+    }
+}
+
+struct BottomBarView: View {
+    var body: some View {
+        HStack(spacing: 50) {
+            VStack(spacing: 10) {
+                Label("Fast Rewind", systemImage: "u.square")
+                Label("Normal Rewind", systemImage: "j.square")
+                Label("Slow Rewind", systemImage: "n.square")
+            }
+            .foregroundColor(.white)
+            
+            VStack(spacing: 10) {
+                Label("Fast Forward", systemImage: "i.square")
+                Label("Normal Forward", systemImage: "k.square")
+                Label("Slow Forward", systemImage: "m.square")
+            }
+            .foregroundColor(.white)
+            
+            VStack(spacing: 10) {
+                Label("Play/Pause", systemImage: "space")
+                Text("Space Bar")
+                    .font(.footnote)
+                    .foregroundColor(.gray)
+            }
+            .foregroundColor(.white)
+        }
+        .padding()
     }
 }
 
