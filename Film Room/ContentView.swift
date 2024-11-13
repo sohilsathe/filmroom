@@ -192,12 +192,14 @@ struct ContentView: View {
 
                     HStack {
                         TextField("YouTube link", text: $youtubeLink)
-                            .padding()
+                            .padding(.vertical, 10)
                             .font(.system(size: 32))
                             .foregroundColor(.white)
-                            .background(Color.black)
-                            .cornerRadius(8)
+                            .background(Color.clear)
+                            .accentColor(.white)  // white cursor
                             .padding(.horizontal, 20)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .disableAutocorrection(true)
 
                         Button(action: {
                             downloadInProgress = true
@@ -222,8 +224,9 @@ struct ContentView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .green))
                                     .frame(width: 100, height: 100)
                             } else {
-                                Circle()
-                                    .fill(Color.green)
+                                Image(systemName: "play.square.fill")
+                                    .resizable()
+                                    .foregroundColor(.red)
                                     .frame(width: 100, height: 100)
                             }
                         }
