@@ -120,7 +120,7 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
             case 46: // m
                 handleKeyEventHelper(event, refreshRate: FF_SLOW[0], stepSize: FF_SLOW[1])
                 return nil
-            case 49: // Space Bar
+            case 49: // space bar
                 if event.type == .keyDown {
                     parent.isPaused.toggle()
                 }
@@ -170,34 +170,35 @@ struct ContentView: View {
     @State private var downloadInProgress: Bool = false
     @State private var downloadComplete: Bool = false
     @State private var videoURL: URL? = nil
-    
+
     let destinationPath = getVideosDirectory()?.path() ?? "~/Downloads/"
-    
+
     var body: some View {
         VStack {
             if downloadComplete, let videoURL = videoURL {
-                // Show video player if the video is downloaded
+                // video player view
                 VStack {
                     PlayerView(videoURL: videoURL).edgesIgnoringSafeArea(.all)
                     BottomBarView().padding(.bottom, 20)
-                }.background(Color.black)
+                }
+                .background(Color.black)
             } else {
-                // Default view with title, text field, and button
+                // home view
                 VStack {
                     Text("Film Room")
-                        .font(.system(size: 64))  // Make the font size larger
+                        .font(.system(size: 64))
                         .foregroundColor(.white)
                         .padding(.top, 50)
-                    
+
                     HStack {
                         TextField("YouTube link", text: $youtubeLink)
                             .padding()
-                            .font(.system(size: 32))  // Make the font size larger
-                            .cornerRadius(8)
+                            .font(.system(size: 32))
                             .foregroundColor(.white)
-                            .background(.black)
+                            .background(Color.black)
+                            .cornerRadius(8)
                             .padding(.horizontal, 20)
-                        
+
                         Button(action: {
                             downloadInProgress = true
                             DispatchQueue.global().async {
@@ -222,26 +223,24 @@ struct ContentView: View {
                                     .frame(width: 100, height: 100)
                             } else {
                                 Circle()
-                                    .fill(.green)
+                                    .fill(Color.green)
                                     .frame(width: 100, height: 100)
                             }
-
                         }
                         .buttonStyle(PlainButtonStyle())
                         .padding(.trailing, 20)
-                        
                     }
                     .padding(.top, 20)
-                    .background(Color.black)
-                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.black)
                 .edgesIgnoringSafeArea(.all)
             }
         }
+        .preferredColorScheme(.dark)
     }
 }
+
 
 struct BottomBarView: View {
     var body: some View {
