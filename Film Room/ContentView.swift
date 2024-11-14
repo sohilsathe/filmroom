@@ -21,7 +21,6 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
     @Binding var isRewinding: Bool
     @Binding var isPaused: Bool
     
-    // rewind / fast forward related
     @Binding var refreshRate: Double
     @Binding var stepSize: Double
     
@@ -39,13 +38,6 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
         
         playerLayer.frame = view.bounds
         playerLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
-        
-        // Register key event handlers
-        NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { event in
-            return context.coordinator.handleKeyEvent(event)
-        }
-        
-        context.coordinator.setupPlayerObservers()
         
         return view
     }
@@ -75,14 +67,6 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
         init(_ parent: AVPlayerLayerRepresentable) {
             self.parent = parent
         }
-        
-        func setupPlayerObservers() {
-            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-                                                   object: nil,
-                                                   queue: .main) { _ in
-                self.parent.player.seek(to: .zero)
-            }
-        }
 
         func startRewind(refreshRate: Double, stepSize: Double) {
             guard rewindTimer == nil else { return }
@@ -97,62 +81,21 @@ struct AVPlayerLayerRepresentable: NSViewRepresentable {
             rewindTimer?.invalidate()
             rewindTimer = nil
         }
-
-        func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
-            switch event.keyCode {
-            case 32: // u
-                handleKeyEventHelper(event, refreshRate: REWIND_FAST[0], stepSize: REWIND_FAST[1])
-                return nil
-            case 34: // i
-                handleKeyEventHelper(event, refreshRate: FF_FAST[0], stepSize: FF_FAST[1])
-                return nil
-            case 38: // j
-                handleKeyEventHelper(event, refreshRate: REWIND_NORMAL[0], stepSize: REWIND_NORMAL[1])
-                return nil
-            case 40: // k
-                handleKeyEventHelper(event, refreshRate: FF_NORMAL[0], stepSize: FF_NORMAL[1])
-                return nil
-            case 45: // n
-                handleKeyEventHelper(event, refreshRate: REWIND_SLOW[0], stepSize: REWIND_SLOW[1])
-                return nil
-            case 46: // m
-                handleKeyEventHelper(event, refreshRate: FF_SLOW[0], stepSize: FF_SLOW[1])
-                return nil
-            case 49: // space bar
-                if event.type == .keyDown {
-                    parent.isPaused.toggle()
-                }
-                return nil
-            default:
-                return event
-            }
-        }
-        
-        func handleKeyEventHelper(_ event: NSEvent, refreshRate: Double, stepSize: Double) {
-            if event.type == .keyDown {
-                parent.isPaused = true
-                parent.refreshRate = refreshRate
-                parent.stepSize = stepSize
-                parent.isRewinding = true
-            } else if event.type == .keyUp {
-                parent.isRewinding = false
-                parent.refreshRate = 0.0
-                parent.stepSize = 0.0
-                parent.isPaused = false
-            }
-        }
     }
 }
 
 struct PlayerView: View {
+    static var eventMonitor: Any? = nil
+
     let player: AVPlayer
     let videoURL: URL
+
     @State private var isRewinding = false
-    @State private var isPaused = true
+    @State private var isPaused = false
     @State private var refreshRate = 0.0
     @State private var stepSize = 0.0
     
-    @Binding var downloadComplete: Bool // pass through to bottom bar
+    @Binding var downloadComplete: Bool
     
     var body: some View {
         VStack {
@@ -160,7 +103,70 @@ struct PlayerView: View {
                 .background(Color.black)
                 .edgesIgnoringSafeArea(.all)
             BottomBarView(downloadComplete: $downloadComplete, isPaused: $isPaused).padding(.bottom, 20)
-        }.background(Color.black)
+        }
+        .background(Color.black)
+        .onAppear {
+            setupEventMonitor()
+        }
+        .onDisappear {
+            removeEventMonitor()
+        }
+    }
+    
+    private func setupEventMonitor() {
+        PlayerView.eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) { event in
+            return self.handleKeyEvent(event)
+        }
+    }
+    
+    private func removeEventMonitor() {
+        if let monitor = PlayerView.eventMonitor {
+            NSEvent.removeMonitor(monitor)
+        }
+    }
+    
+    func handleKeyEvent(_ event: NSEvent) -> NSEvent? {
+        switch event.keyCode {
+        case 32: // u
+            handleKeyEventHelper(event, refreshRate: REWIND_FAST[0], stepSize: REWIND_FAST[1])
+            return nil
+        case 34: // i
+            handleKeyEventHelper(event, refreshRate: FF_FAST[0], stepSize: FF_FAST[1])
+            return nil
+        case 38: // j
+            handleKeyEventHelper(event, refreshRate: REWIND_NORMAL[0], stepSize: REWIND_NORMAL[1])
+            return nil
+        case 40: // k
+            handleKeyEventHelper(event, refreshRate: FF_NORMAL[0], stepSize: FF_NORMAL[1])
+            return nil
+        case 45: // n
+            handleKeyEventHelper(event, refreshRate: REWIND_SLOW[0], stepSize: REWIND_SLOW[1])
+            return nil
+        case 46: // m
+            handleKeyEventHelper(event, refreshRate: FF_SLOW[0], stepSize: FF_SLOW[1])
+            return nil
+        case 49: // space bar
+            if event.type == .keyDown {
+                isPaused.toggle()
+            }
+            return nil
+        default:
+            return event
+        }
+    }
+    
+    func handleKeyEventHelper(_ event: NSEvent, refreshRate: Double, stepSize: Double) {
+        if event.type == .keyDown {
+            isPaused = true
+            self.refreshRate = refreshRate
+            self.stepSize = stepSize
+            isRewinding = true
+        } else if event.type == .keyUp {
+            isRewinding = false
+            self.refreshRate = 0.0
+            self.stepSize = 0.0
+            isPaused = false
+        }
     }
 }
 
